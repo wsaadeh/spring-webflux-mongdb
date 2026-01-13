@@ -6,6 +6,7 @@ import com.devsuperior.workshopmongo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -28,6 +29,12 @@ public class UserController {
 	public Mono<ResponseEntity<UserDTO>> findById(@PathVariable String id) {
 		Mono<UserDTO> dto = service.findById(id);
 		return dto.map(x-> ResponseEntity.ok().body(x));
+	}
+
+	@PostMapping
+	public Mono<ResponseEntity<UserDTO>> insert(@RequestBody UserDTO dto, UriComponentsBuilder builder){
+		return service.insert(dto).map(x-> ResponseEntity.created(builder.path("/users/{id}").buildAndExpand(x.getId())
+				.toUri()).body(x));
 	}
 
 
